@@ -5,14 +5,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 )
 
-func getFloats(filepath string) ([]float64, []float64) {
+func getNums(filepath string) ([]int, []int) {
 	file, err := os.Open(filepath)
 
 	if err != nil {
@@ -22,28 +21,28 @@ func getFloats(filepath string) ([]float64, []float64) {
 
 	scanner := bufio.NewScanner(file)
 
-	leftFloats := []float64{}
-	rightFloats := []float64{}
+	leftFloats := []int{}
+	rightFloats := []int{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineNumbers := strings.Fields(line)
-		left, err := strconv.ParseFloat(lineNumbers[0], 64)
+		left, err := strconv.Atoi(lineNumbers[0])
 
 		if err != nil {
 			log.Fatal(err)
 		}
 		leftFloats = append(leftFloats, left)
 
-		right, err := strconv.ParseFloat(lineNumbers[1], 64)
+		right, err := strconv.Atoi(lineNumbers[1])
 
 		if err != nil {
 			log.Fatal(err)
 		}
 		rightFloats = append(rightFloats, right)
 	}
-	sort.Float64s(leftFloats)
-	sort.Float64s(rightFloats)
+	sort.Ints(leftFloats)
+	sort.Ints(rightFloats)
 	return leftFloats, rightFloats
 }
 
@@ -56,28 +55,16 @@ func zip[T any](left []T, right []T) [][]T {
 	return zipped
 }
 
-func partOne(leftFloats []float64, rightFloats []float64) int {
+func partOne(leftNums []int, rightNums []int) int {
 	totalDifferences := 0
-	for _, pair := range zip(leftFloats, rightFloats) {
-		left := pair[0]
-		right := pair[1]
-		absolute := int(math.Abs(left - right))
-		totalDifferences += absolute
+	for _, pair := range zip(leftNums, rightNums) {
+		difference := max(pair[0], pair[1]) - min(pair[0], pair[1])
+		totalDifferences += difference
 	}
 	return totalDifferences
 }
 
-func convFloatToIntSlice(floatSlice []float64) []int {
-	intSlice := make([]int, len(floatSlice))
-	for i, float := range floatSlice {
-		intSlice[i] = int(float)
-	}
-	return intSlice
-}
-
-func partTwo(leftFloats []float64, rightFloats []float64) int {
-	leftNums := convFloatToIntSlice(leftFloats)
-	rightNums := convFloatToIntSlice(rightFloats)
+func partTwo(leftNums []int, rightNums []int) int {
 	numMap := make(map[int]int)
 
 	for _, left := range leftNums {
@@ -101,9 +88,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	filepath := args[len(args)-1]
-	leftFloats, rightFloats := getFloats(filepath)
-	answerPartOne := partOne(leftFloats, rightFloats)
-	fmt.Printf("Total of differences: %d\n", answerPartOne)
-	answerPartTwo := partTwo(leftFloats, rightFloats)
-	fmt.Printf("Similarity Score: %d\n", answerPartTwo)
+	leftNums, rightNums := getNums(filepath)
+	fmt.Printf("Total of differences: %d\n", partOne(leftNums, rightNums))
+	fmt.Printf("Similarity Score: %d\n", partTwo(leftNums, rightNums))
 }
