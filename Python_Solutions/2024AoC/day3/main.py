@@ -18,11 +18,9 @@ def parts(filepath: str) -> tuple[int, int]:
     p_one_total = 0
     total = 0
     for mo in re.finditer(tok_regex, read_data):
-        kind = mo.lastgroup
-        value = mo.group()
-        match kind:
+        match mo.lastgroup:
             case 'MUL':
-                lhs, rhs = re.findall(r'\d{1,3}', value)
+                lhs, rhs = re.findall(r'\d{1,3}', mo.group())
                 product = int(lhs) * int(rhs)
                 p_one_total += product
                 if do:
