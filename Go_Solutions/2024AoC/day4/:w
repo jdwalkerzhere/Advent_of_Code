@@ -1,0 +1,21 @@
+package main
+
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"math"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func getData(filepath string) ([]int, error) {
+	filehandle, err := os.Open(filepath)
+
+	if err != nil {
+		return nil, err
+	}
+}
